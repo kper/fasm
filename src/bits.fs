@@ -1,11 +1,15 @@
-\ Returns the lower 7 bits of an integer.
-: [7..0] ( n1 -- n2 ) 0x7F and ;
+: [7..0] ( n1 -- n2 ) 
+  \g Returns the lower 7 bits of an integer.
+  0x7F and ;
 
-\ Shifts u1 to the left by n bits.
-: << ( u1 n -- u2 ) lshift ;
+: << ( u1 n -- u2 ) 
+  \g Shifts u1 to the left by n bits.
+  lshift ;
 
-\ Shift 1 to the left by n bits.
-: 1<< ( n -- n2 ) 1 swap << ;
+: 1<< ( n -- n2 ) 
+  \g Shift 1 to the left by n bits.
+  1 swap << ;
 
-\ Shifts u1 to the right by n bits.
-: >> ( u1 n -- u2 ) rshift ;
+: >> ( u1 n -- u2 ) 
+  \g Shifts u1 to the right by n bits.
+  rshift ;
