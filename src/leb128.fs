@@ -15,7 +15,11 @@ require bits.fs
   addr r> + swap          \ Return the new address and the value.
 ;
 
-: LEB128->s ( addr n -- addr2 s ) { n }
+: LEB128->s { n } ( addr n -- addr2 s )
+  \g Decodes an LEB128 encoded signed varaible size integer beginning
+  \g at addr. Pushes the c-addr2 pointing at the next byte after the end 
+  \g of the encoded integer as well as the integer onto the stack. 
+  \
   LEB128->u dup n 1<< and 0<> if negate endif
 ;
 
