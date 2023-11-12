@@ -3,17 +3,19 @@
 \ Increments the top element on the return stack.
 : r+ ( -- ) r> 1+ >r ;     
 
+require bits.fs
+
 \ Returns the lower 7 bits of an integer.
-: [7..0] ( n1 -- n2 ) 0x7F and ;
+\ : [7..0] ( n1 -- n2 ) 0x7F and ;
 
 \ Shifts u1 to the left by n bits.
-: << ( u1 n -- u2 ) lshift ;
+\ : << ( u1 n -- u2 ) lshift ;
 
 \ Shift 1 to the left by n bits.
-: 1<< ( n -- n2 ) 1 swap << ;
+\ : 1<< ( n -- n2 ) 1 swap << ;
 
 \ Shifts u1 to the right by n bits.
-: >> ( u1 n -- u2 ) rshift ;
+\ : >> ( u1 n -- u2 ) rshift ;
 
 : LEB128->u { addr -- addr2 u }
   \g Decodes an LEB128 encoded unsigned varaible size integer beginning
@@ -81,5 +83,5 @@ create n1 0x01 c,
 create n2 0x80 c, 0x01 c,
 create n3 0x85 c, 0x34 c,
 
-\ n1 LEB128>cell
-n3 LEB128>cell
+\ n1 LEB128->u
+n3 LEB128->u
