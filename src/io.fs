@@ -1,6 +1,6 @@
 0 Value fd-in
 
-s" ./../simple.wasm" r/o bin open-file throw Value fd-in
+s" ./simple.wasm" r/o bin open-file throw Value fd-in
 
 : read_bytes ( addr n -- )
     fd-in read-file throw drop .s ;
