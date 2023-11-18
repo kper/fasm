@@ -1,6 +1,7 @@
 \ require io.fs
 require magic_bytes.fs
 require version_bytes.fs
+require section.fs
 
 \ : parsing_module
 \   parse_magic_bytes 
@@ -14,7 +15,7 @@ require version_bytes.fs
              \ pushes an address and the file length 
              \ onto the stack.
   drop       \ We dont need the file size. All blocks
-             \ start with their respective size.
+             \ start with their respective sizes.
 ;
 
 : wasm-compile ( addr -- )
@@ -22,4 +23,15 @@ require version_bytes.fs
   \
   validate-magic-number
   validate-version
+  TYPE-SECTION     skip-section
+  \ IMPORT-SECTION   skip-section
+  FUNCTION-SECTION skip-section
+  \ TABLE-SECTION    skip-section
+  \ MEMORY-SECTION   skip-section
+  \ GLOBAL-SECTION   skip-section
+  \ EXPORT-SECTION   skip-section
+  \ START-SECTION    skip-section
+  \ ELEMENT-SECTION  skip-section
+  CODE-SECTION     skip-section
+  \ DATA-SECTION     skip-section
 ;
