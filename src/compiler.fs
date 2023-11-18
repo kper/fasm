@@ -16,5 +16,6 @@ require version_bytes.fs
              \ onto the stack.
   drop       \ We dont need the file size. All blocks
              \ start with their respective size.
-  
+  validate-magic-number
+  validate-version
 ;
