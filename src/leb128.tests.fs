@@ -1,1 +1,0 @@
-\ https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Assertions.html#Assertions

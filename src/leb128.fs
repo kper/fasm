@@ -19,7 +19,6 @@ require bits.fs
   \g Decodes an LEB128 encoded signed varaible size integer beginning
   \g at addr. Pushes the c-addr2 pointing at the next byte after the end 
   \g of the encoded integer as well as the integer onto the stack. 
-  \
   LEB128->u dup n 1<< and 0<> if negate endif
 ;
 
@@ -70,12 +69,3 @@ require bits.fs
   \g at c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
   8 LEB128->s ;
-
-\ TODO: -> Tests
-
-create n1 0x01 c,
-create n2 0x80 c, 0x01 c,
-create n3 0x85 c, 0x34 c,
-
-\ n1 LEB128->u
-n3 LEB128->u
