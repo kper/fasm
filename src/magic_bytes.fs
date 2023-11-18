@@ -16,17 +16,17 @@
 \     magic-buffer check_magic
 \ ;
 
-\ Indicates a wrong magic number.
--100 constant error-magic-number
+: expect-byte ( addr1 c -- addr1 )
+  over c@ <> if 
+    s" Invalid WASM file. Wrong magic number." exception 
+    throw 
+  endif
+;
 
 : validate-magic-number ( addr1 -- addr2 )
   \g Validates the magic number '\0asm'.
-  dup @ 0x00 <> if error-magic-number exit endif
-  char+ 
-  dup @ 0x61 <> if error-magic-number exit endif
-  char+
-  dup @ 0x73 <> if error-magic-number exit endif
-  char+
-  dup @ 0x6D <> if error-magic-number exit endif
-  char+
+  0x00 expect-byte char+
+  0x61 expect-byte char+
+  0x73 expect-byte char+
+  0x6D expect-byte char+
 ;

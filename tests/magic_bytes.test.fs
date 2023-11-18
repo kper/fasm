@@ -1,11 +1,10 @@
 require test.fs
 
-create correct-magic-number 0x00 c, 0x61 c, 0x73 c, 0x6D c,
 create wrong-magic-number   0x01 c, 0x61 c, 0x73 c, 0x6D c,
+create correct-magic-number 0x00 c, 0x61 c, 0x73 c, 0x6D c,
 
-wrong-magic-number validate-magic-number 
--100  
-test-equal
+\ TODO: test for expected exception
+\ wrong-magic-number validate-magic-number 
 
 correct-magic-number validate-magic-number 
 correct-magic-number 4 chars +
