@@ -13,3 +13,20 @@
 : >> ( u1 n -- u2 ) 
   \g Shifts u1 to the right by n bits.
   rshift ;
+
+\ TODO: usefull?
+: n8
+  char+
+;
+
+: n16
+  2 chars +
+;
+
+: n32
+  4 chars +
+;
+
+: n64
+  8 chars +
+;

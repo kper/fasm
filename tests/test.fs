@@ -2,10 +2,10 @@
   w1 w2 = if 
     s" OK " type 
   else 
-    s" FAIL " type
-    w1 . 
-    s" is not equal to " type 
-    w2 .
+    s" FAIL expected " type
+    w2 . 
+    s" but got " type 
+    w1 .
   endif 
   cr
 ;

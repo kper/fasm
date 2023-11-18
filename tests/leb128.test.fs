@@ -1,5 +1,4 @@
 require test.fs
-require leb128.fs
 
 create n1 0x01 c,
 create n2 0x80 c, 0x01 c,
