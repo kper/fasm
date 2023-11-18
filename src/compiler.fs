@@ -33,5 +33,7 @@ require section.fs
   \ START-SECTION    skip-section
   \ ELEMENT-SECTION  skip-section
   CODE-SECTION     skip-section
+  \ TODO: Gives an error because we read an invalid memory address. 
+  \ TODO: Maybe need to check if current address is past the file size.
   \ DATA-SECTION     skip-section
 ;
