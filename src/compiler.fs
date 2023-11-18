@@ -14,7 +14,7 @@ require section.fs
   slurp-file \ Reads the entire file into memory and 
              \ pushes an address and the file length 
              \ onto the stack.
-  drop       \ We dont need the file size. All blocks
+  drop       \ We don't need the file size. All blocks
              \ start with their respective sizes.
 ;
 
