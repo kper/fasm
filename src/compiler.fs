@@ -8,7 +8,7 @@ require section.fs
 \   parse_version_bytes
 \ ;
 
-: wasm-parse ( str --- addr )
+: wasm-parse ( str -- addr )
   \g Reads the WASM file passed as the sole argument.
   \
   slurp-file \ Reads the entire file into memory and 
