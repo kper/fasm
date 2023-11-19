@@ -2,7 +2,7 @@ require leb128.fs
 
 0 Value fd-in
 
-s" ./simple.wasm" r/o bin open-file throw Value fd-in
+s" ./wasm/simple.wasm" r/o bin open-file throw Value fd-in
 
 : read_bytes ( addr n -- )
     fd-in read-file throw drop ;
@@ -12,7 +12,7 @@ s" ./simple.wasm" r/o bin open-file throw Value fd-in
     max 0 DO addr i + c@ LOOP 
 ;
 
-: consume_leb128_u { addr -- value }
+: consume_leb128_u { addr -- addr2 value }
     addr LEB128->u ( now, we have the next addr on the stack and the value )
     { next-addr val }
     next-addr addr -
@@ -21,5 +21,5 @@ s" ./simple.wasm" r/o bin open-file throw Value fd-in
     { fpos }
     fpos consumed-bytes -
     fd-in reposition-file throw
-    val
+    next-addr val
 ;

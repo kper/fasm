@@ -1,8 +1,7 @@
-require io.fs
-require section.fs
+require ../src/io.fs
 
 create instruction 255
-create payload 02 , 255 , 255 , 255
+create payload 03 , 255 , 255 , 255
 create n1 01 , 255
 
 : check_if_0xFF { addr -- }
@@ -25,5 +24,5 @@ create n1 01 , 255
 ;
 
 : test2
-    payload ['] check_if_0xFF vec
+    payload ['] check_if_0xFF_v2 vec
 ;
