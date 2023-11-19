@@ -1,5 +1,5 @@
 run:
-	gforth src/compiler.fs
+	gforth src/fasm.fs ./wasm/simpler.wasm
 
 test:
 	gforth src/leb128.fs tests/leb128.test.fs

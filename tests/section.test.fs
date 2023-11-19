@@ -1,5 +1,7 @@
 require test.fs
 
+\ TODO: Bug too many addresses on stack after skip-section perhaps because of u32@?
+
 : test-skip-section
   s" ./wasm/simpler.wasm" 
   wasm-parse
@@ -14,6 +16,7 @@ require test.fs
   CUSTOM-SECTION skip-section   \ This should be a no-op.
   dup x 8 chars + test-equal
   dup c@ 0x01 test-equal
+
 
   TYPE-SECTION skip-section
   dup x 15 chars + test-equal   \ Type section is 2 + 5 byte long (plus 8 bytes for the magic 

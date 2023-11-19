@@ -18,6 +18,8 @@ require leb128.fs
   dup c@ u = if 
     char+       \ Forward to section size.
     dup u32@    \ Read size field.
+    \ .s
     chars +     \ Forward size bytes.
+    \ .s
   endif
 ;
