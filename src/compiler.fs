@@ -3,11 +3,6 @@ require magic_bytes.fs
 require version_bytes.fs
 require section.fs
 
-\ : parsing_module
-\   parse_magic_bytes 
-\   parse_version_bytes
-\ ;
-
 : wasm-parse ( str -- addr )
   \g Reads the WASM file passed as the sole argument.
   \
