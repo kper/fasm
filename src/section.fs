@@ -19,9 +19,5 @@ require leb128.fs
     char+       \ Forward to section size.
     dup u32@    \ Read size field.
     chars +     \ Forward size bytes.
-  else
-    u           \ Section did not match.
-                \ Put u back on the stack 
-                \ for the next section test.
   endif
 ;

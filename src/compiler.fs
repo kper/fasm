@@ -24,16 +24,14 @@ require section.fs
   validate-magic-number
   validate-version
   TYPE-SECTION     skip-section
-  \ IMPORT-SECTION   skip-section
+  IMPORT-SECTION   skip-section
   FUNCTION-SECTION skip-section
-  \ TABLE-SECTION    skip-section
-  \ MEMORY-SECTION   skip-section
-  \ GLOBAL-SECTION   skip-section
-  \ EXPORT-SECTION   skip-section
-  \ START-SECTION    skip-section
-  \ ELEMENT-SECTION  skip-section
+  TABLE-SECTION    skip-section
+  MEMORY-SECTION   skip-section
+  GLOBAL-SECTION   skip-section
+  EXPORT-SECTION   skip-section
+  START-SECTION    skip-section
+  ELEMENT-SECTION  skip-section
   CODE-SECTION     skip-section
-  \ TODO: Gives an error because we read an invalid memory address. 
-  \ TODO: Maybe need to check if current address is past the file size.
-  \ DATA-SECTION     skip-section
+  DATA-SECTION     skip-section
 ;
