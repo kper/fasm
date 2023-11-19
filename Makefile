@@ -7,3 +7,4 @@ test:
 	gforth src/version_bytes.fs tests/version_bytes.test.fs
 	gforth src/compiler.fs tests/compiler.test.fs
 	gforth src/compiler.fs src/section.fs tests/section.test.fs
+	gforth src/utils.fs tests/utils.test.fs
