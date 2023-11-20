@@ -1,6 +1,6 @@
 require io.fs
 
-: vec {  addr xt } ( addr xt -- )
+: vec {  addr xt } ( addr xt -- next-addr )
     \g Executes the xt n times.
     \ n is encoded as leb128 in the addr
     addr consume_leb128_u \ Read the n

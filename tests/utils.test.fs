@@ -1,28 +1,14 @@
 require ../src/io.fs
 
-create instruction 255
-create payload 03 , 255 , 255 , 255
-create n1 01 , 255
+create payload 03 , 1 , 1 , 1
 
-: check_if_0xFF { addr -- }
-    addr 1
-    instruction 1
-    compare
-    0=
-;
-
-: check_if_0xFF_v2 { addr -- }
-    addr 1
-    instruction 1
-    compare
-    0=
+: sum { sum addr -- }
+    sum 1 +
     addr 1 + ( increment it for the next iteration )
 ;
 
-: test
-    n1 ['] check_if_0xFF vec
+: test_sum 
+    0 payload ['] sum vec
 ;
 
-: test2
-    payload ['] check_if_0xFF_v2 vec
-;
+test_sum
