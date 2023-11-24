@@ -14,6 +14,7 @@ $6A constant i32.add
 ;
 
 : wasm-compile-i32.add ( addr1 -- addr2 )
+  char+
   s" add" type cr          \ TODO: Write to file.
 ;
 
@@ -28,13 +29,21 @@ $6A constant i32.add
   dup u32@        \ Read code vec
   drop            \ Currently only one is supported
   dup u32@        \ Read code size
-  drop            \ We are not interested in the function size
-  dup u32@        \ Reading locals
-  drop            \ Assuming no locals TODO
-  dup c@              \ Reading first instruction
-  case
-    i32.const of wasm-compile-i32.const endof
-    i32.add   of wasm-compile-i32.add endof
-    char+     \ Skip byte
-  endcase
+  { code-size }            
+  dup code-size + \ Compute end of code block
+  1-              \ Subtract one because it will be used as index
+  { end-instruction-ptr }
+  dup u32@                      \ Reading locals
+  { number-of-locals }          \ Assuming no locals TODO
+  number-of-locals +            \ Skipping locals because locals have always one byte size
+  begin
+    dup c@ ~~     \ Reading instruction
+    case
+      i32.const of wasm-compile-i32.const endof
+      i32.add   of wasm-compile-i32.add endof
+      char+
+    endcase
+
+  dup end-instruction-ptr >=
+  until  
 ;
