@@ -1,6 +1,9 @@
 require leb128.fs
 require section.fs
 
+\ Control Instructions
+$2 constant block.instr
+
 \ 5.4.5 Numeric Instructions
 $41 constant i32.const
 \ 0x42 constant i64.const
@@ -16,6 +19,29 @@ $6A constant i32.add
 : wasm-compile-i32.add ( addr1 -- addr2 )
   char+
   s" add" type cr          \ TODO: Write to file.
+;
+
+: wasm-compile-block ( addr end-instruction-ptr -- addr2 )
+  recursive
+  { end-instruction-ptr }
+  begin
+    dup c@ ~~     \ Reading instruction
+    case
+      i32.const   of wasm-compile-i32.const endof
+      i32.add     of wasm-compile-i32.add endof
+      11          of char+ exit endof
+      block.instr of 
+                  char+ \ Read instruction
+                  char+ \ Read blocktype 
+
+                  end-instruction-ptr wasm-compile-block 
+
+                  endof
+      char+
+    endcase
+
+  dup end-instruction-ptr >=
+  until
 ;
 
 : wasm-compile-code-section ( addr1 -- addr2 )
@@ -36,14 +62,6 @@ $6A constant i32.add
   dup u32@                      \ Reading locals
   { number-of-locals }          \ Assuming no locals TODO
   number-of-locals +            \ Skipping locals because locals have always one byte size
-  begin
-    dup c@ ~~     \ Reading instruction
-    case
-      i32.const of wasm-compile-i32.const endof
-      i32.add   of wasm-compile-i32.add endof
-      char+
-    endcase
 
-  dup end-instruction-ptr >=
-  until  
+  end-instruction-ptr wasm-compile-block    
 ;
