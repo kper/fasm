@@ -34,7 +34,11 @@ $6A constant i32.add
                   char+ \ Read instruction
                   char+ \ Read blocktype 
 
+                  s" depth >r" type cr          \ TODO: Write to file.
+
                   end-instruction-ptr wasm-compile-block 
+
+                  s" depth r> - remove-nth" type cr          \ TODO: Write to file.
 
                   endof
       char+
