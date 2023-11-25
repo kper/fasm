@@ -3,6 +3,7 @@ require section.fs
 
 \ Control Instructions
 $2 constant block.instr
+$0c constant br
 
 \ 5.4.5 Numeric Instructions
 $41 constant i32.const
@@ -16,33 +17,46 @@ $20 constant local.get
 : wasm-compile-i32.const ( addr1 -- addr2 )
   char+       \ Forward to constant value.
   dup i32@    \ Read value.
-  . cr        \ TODO: Write to file.
+  u-to-s compile-file compile-cr
 ;
 
 : wasm-compile-i32.add ( addr1 -- addr2 )
   char+
-  s" add" type cr          \ TODO: Write to file.
+  s" add" compile-file 
+  compile-cr
 ;
 
-: wasm-compile-block ( addr end-instruction-ptr -- addr2 )
+: wasm-compile-block ( number-generator addr end-instruction-ptr -- addr2 )
   recursive
-  { end-instruction-ptr }
+  { number-generator end-instruction-ptr }
   begin
     dup c@ ~~     \ Reading instruction
     case
       i32.const   of wasm-compile-i32.const endof
       i32.add     of wasm-compile-i32.add endof
+      br          of 
+                  char+       \ Forward to constant value.
+                  dup u32@    \ Read label.
+                  number-generator swap -
+                  { jmp }
+                  s" depth block" compile-file 
+                  jmp compile-file 
+                  s" - " compile-file 
+                  compile-cr          
+                  endof
       11          of char+ exit endof
       local.get   of char+ char+ endof
       block.instr of 
                   char+ \ Read instruction
-                  char+ \ Read blocktype 
+                  dup c@ \ Read blocktype 
+                  char+ 
 
-                  s" depth >r" type cr          \ TODO: Write to file.
+                  s" depth { block" compile-file
+                  number-generator u-to-s compile-file 
+                  s" } " compile-file
+                  compile-cr          
 
-                  end-instruction-ptr wasm-compile-block 
-
-                  s" depth r> - remove-nth" type cr          \ TODO: Write to file.
+                  number-generator 1+ end-instruction-ptr wasm-compile-block 
 
                   endof
     endcase
@@ -71,5 +85,5 @@ $20 constant local.get
   { number-of-locals }          \ Assuming no locals TODO
   number-of-locals +            \ Skipping locals because locals have always one byte size
 
-  end-instruction-ptr wasm-compile-block    
+  0 end-instruction-ptr wasm-compile-block    
 ;

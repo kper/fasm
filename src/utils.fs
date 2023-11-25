@@ -1,9 +1,12 @@
-require io.fs
+0 Value fd-out
+s" ./output.fs" r/w create-file throw to fd-out
 
-: vec {  addr xt } ( addr xt -- next-addr )
-    \g Executes the xt n times.
-    \ n is encoded as leb128 in the addr
-    addr consume_leb128_u \ Read the n
-    { base-addr n } 
-    base-addr n 0 do xt execute loop \ Execute the execution token. It is important that the xt puts the incremented addr on the stack.
+: u-to-s ( u -- c-addr u ) 0 <# #s #> ;
+
+: compile-file ( addr u -- )
+    fd-out write-file throw
+;
+
+: compile-cr ( -- ) 
+    s"  " fd-out write-line throw
 ;

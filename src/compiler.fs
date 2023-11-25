@@ -1,3 +1,4 @@
+require utils.fs
 require magic_bytes.fs
 require version_bytes.fs
 require section.fs
