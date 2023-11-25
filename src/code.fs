@@ -48,12 +48,12 @@ $20 constant local.get
       local.get   of char+ char+ endof
       block.instr of 
                   char+ \ Read instruction
-                  dup c@ \ Read blocktype 
+                  \ dup c@ \ Read blocktype 
                   char+ 
 
                   s" depth { block" compile-file
                   number-generator u-to-s compile-file 
-                  s" } " compile-file
+                  s"  } " compile-file
                   compile-cr          
 
                   number-generator 1+ end-instruction-ptr wasm-compile-block 
@@ -79,7 +79,6 @@ $20 constant local.get
   { code-size }            
   dup code-size + \ Compute end of code block
   1-              \ Subtract one because it will be used as index
-  ~~
   { end-instruction-ptr }
   dup u32@                      \ Reading locals
   { number-of-locals }          \ Assuming no locals TODO
