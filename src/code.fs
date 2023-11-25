@@ -10,6 +10,9 @@ $41 constant i32.const
 
 $6A constant i32.add
 
+\ Variable Instructions
+$20 constant local.get
+
 : wasm-compile-i32.const ( addr1 -- addr2 )
   char+       \ Forward to constant value.
   dup i32@    \ Read value.
@@ -30,6 +33,7 @@ $6A constant i32.add
       i32.const   of wasm-compile-i32.const endof
       i32.add     of wasm-compile-i32.add endof
       11          of char+ exit endof
+      local.get   of char+ char+ endof
       block.instr of 
                   char+ \ Read instruction
                   char+ \ Read blocktype 
@@ -41,7 +45,6 @@ $6A constant i32.add
                   s" depth r> - remove-nth" type cr          \ TODO: Write to file.
 
                   endof
-      char+
     endcase
 
   dup end-instruction-ptr >=
@@ -62,6 +65,7 @@ $6A constant i32.add
   { code-size }            
   dup code-size + \ Compute end of code block
   1-              \ Subtract one because it will be used as index
+  ~~
   { end-instruction-ptr }
   dup u32@                      \ Reading locals
   { number-of-locals }          \ Assuming no locals TODO
