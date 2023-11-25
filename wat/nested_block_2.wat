@@ -8,5 +8,4 @@
       i32.const 20
     ) 
 )
-(export "temp" (func $temp))
-)
+(export "temp" (func $temp)))

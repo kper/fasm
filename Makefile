@@ -1,5 +1,5 @@
 run:
-	gforth src/fasm.fs ./wasm/simpler.wasm
+	gforth src/fasm.fs ./wasm/nested_block_2.wasm
 
 test:
 	gforth src/leb128.fs tests/leb128.test.fs
