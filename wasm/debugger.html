@@ -1,0 +1,11 @@
+<html>
+	<head>
+		<script>
+			WebAssembly.instantiateStreaming(fetch('./nested_block_2.wasm'), {})
+				.then(obj => {
+					console.log(obj.instance.exports["temp"]());
+				});
+		</script>
+	</head>
+	<body>Open the console!</body
+</html>
