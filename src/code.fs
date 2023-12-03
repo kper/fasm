@@ -56,7 +56,7 @@ $20 constant local.get
                   else
                   \ The block has one return value
 
-                  s" 1- 0 ?do drop loop" compile-file compile-cr
+                  s" swap { value } 1- 0 ?do drop loop value " compile-file compile-cr
 
                   endif 
 
