@@ -58,7 +58,15 @@ $20 constant local.get
 
                   s" swap { value } 1- 0 ?do drop loop value " compile-file compile-cr
 
-                  endif 
+                  jmp 0 = if
+                    s" loop \ Jumping the inner most label" compile-file
+                    compile-cr
+                  else
+                    jmp 1+ 0 ?do 
+                      s" leave" compile-file \ this will not work because "leave" can only leave the inner most loop
+                      compile-cr
+                    loop
+                  then
 
                   endof
       11          of char+ exit endof
@@ -74,7 +82,13 @@ $20 constant local.get
                   s"  } " compile-file
                   compile-cr          
 
+                  s" 1 0 do" compile-file
+                  compile-cr
+
                   block-type number-generator 1+ end-instruction-ptr wasm-compile-block 
+
+                  s" loop \ Block has ended" compile-file
+                  compile-cr
 
                   endof
     endcase
