@@ -10,6 +10,7 @@ create n7 0xCF c, 0xEF c, 0xDD c, 0x04 c,
 
 create c1 0x7F c,
 create c2 0xFF c, 0x00 c,
+create c3 0x81 c, 0x7F c,
 
 
 \ TODO: Test new address
@@ -23,8 +24,10 @@ n7 LEB128->u 9926607 test-equal
 
 c1 LEB128->u 127     test-equal
 c2 LEB128->u 127     test-equal
+c3 LEB128->u 16257   test-equal
 
 c1 8 LEB128->s -1    test-equal
 c2 8 LEB128->s 127   test-equal
+c3 8 LEB128->s -127  test-equal
 
 bye
