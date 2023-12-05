@@ -8,8 +8,8 @@ require bits.fs
   0 >r                    \ Initialize the counter c = 0 on the return stack.
   0 begin                 \ Initialize the value accumulator u = 0.
     addr r@ chars + c@    \ Load byte z.
-    dup [7..0] r@ 8 * <<  \ Compute (z & 0x7f) << (c * 8).
-    rot or swap           \ Update u = u | (z & 0x7f << (c * 8).
+    dup [7..0] r@ 7 * <<  \ Compute (z & 0x7f) << (c * 7).
+    rot or swap           \ Update u = u | (z & 0x7f << (c * 7).
     r> 1+ >r              \ Increnent the counter c.
   0x80 and 0= until       \ Repeat if most significant bit is 1.
   addr r> + swap          \ Return the new address and the value.

@@ -25,7 +25,7 @@ require code.fs
 ;
 
 : wasm-compile ( addr -- )
-  \g Compiles a WASM filet to a FORTH source file.
+  \g Compiles a WASM file to a FORTH source file.
   \
   validate-magic-number
   validate-version
