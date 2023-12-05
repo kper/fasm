@@ -14,20 +14,20 @@ create c3 0x81 c, 0x7F c,
 
 
 \ TODO: Test new address
-n1 LEB128->u 1       test-equal
-n2 LEB128->u 128     test-equal
-n3 LEB128->u 6661    test-equal
-n4 LEB128->u 200     test-equal
-n5 LEB128->u 300     test-equal
-n6 LEB128->u 3947463 test-equal
-n7 LEB128->u 9926607 test-equal
+n1 LEB128->u 1       test-equal drop
+n2 LEB128->u 128     test-equal drop
+n3 LEB128->u 6661    test-equal drop
+n4 LEB128->u 200     test-equal drop
+n5 LEB128->u 300     test-equal drop
+n6 LEB128->u 3947463 test-equal drop
+n7 LEB128->u 9926607 test-equal drop
 
-c1 LEB128->u 127     test-equal
-c2 LEB128->u 127     test-equal
-c3 LEB128->u 16257   test-equal
+c1 LEB128->u 127     test-equal drop
+c2 LEB128->u 127     test-equal drop
+c3 LEB128->u 16257   test-equal drop
 
-c1 8 LEB128->s -1    test-equal
-c2 8 LEB128->s 127   test-equal
-c3 8 LEB128->s -127  test-equal
+c1 LEB128->s -1      test-equal drop
+c2 LEB128->s 127     test-equal drop
+c3 LEB128->s -127    test-equal drop
 
 bye
