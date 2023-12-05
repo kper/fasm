@@ -11,23 +11,27 @@ create n7 0xCF c, 0xEF c, 0xDD c, 0x04 c,
 create c1 0x7F c,
 create c2 0xFF c, 0x00 c,
 create c3 0x81 c, 0x7F c,
+create c4 0xF9 c, 0xD2 c, 0xB4 c, 0x7F c,
+create c5 0xEC c, 0xB2 c, 0x7F c,
 
 
 \ TODO: Test new address
-n1 LEB128->u 1       test-equal drop
-n2 LEB128->u 128     test-equal drop
-n3 LEB128->u 6661    test-equal drop
-n4 LEB128->u 200     test-equal drop
-n5 LEB128->u 300     test-equal drop
-n6 LEB128->u 3947463 test-equal drop
-n7 LEB128->u 9926607 test-equal drop
+n1 LEB128->u 1        test-equal drop
+n2 LEB128->u 128      test-equal drop
+n3 LEB128->u 6661     test-equal drop
+n4 LEB128->u 200      test-equal drop
+n5 LEB128->u 300      test-equal drop
+n6 LEB128->u 3947463  test-equal drop
+n7 LEB128->u 9926607  test-equal drop
 
-c1 LEB128->u 127     test-equal drop
-c2 LEB128->u 127     test-equal drop
-c3 LEB128->u 16257   test-equal drop
+c1 LEB128->u 127      test-equal drop
+c2 LEB128->u 127      test-equal drop
+c3 LEB128->u 16257    test-equal drop
 
-c1 LEB128->s -1      test-equal drop
-c2 LEB128->s 127     test-equal drop
-c3 LEB128->s -127    test-equal drop
+c1 LEB128->s -1       test-equal drop
+c2 LEB128->s 127      test-equal drop
+c3 LEB128->s -127     test-equal drop
+c4 LEB128->s -1234567 test-equal drop
+c5 LEB128->s -9876    test-equal drop
 
 bye

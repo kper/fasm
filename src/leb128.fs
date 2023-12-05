@@ -20,10 +20,10 @@ require bits.fs
   \g at addr. Pushes the c-addr2 pointing at the next byte after the end 
   \g of the encoded integer as well as the integer onto the stack. 
   \
-  addr LEB128->u       \ Read as unsigned value.
-  over addr -          \ Compute bytes read l = addr2 - addr. 
-  7 * 1- 1<< over and  \ Test bit at position l * 7 - 1.
-  0<> if negate endif  \ Negate if bit is set.
+  addr LEB128->u          \ Read as unsigned value.
+  over addr - 7 * { l }   \ Compute MSB position l = addr2 - addr. 
+  l 1- 1<< over and       \ Test MSB at position l.
+  0<> if l -1<< or endif  \ Sign extend if bit is set.
 ;
 
 : u64@ ( c-addr1 -- c-addr2 u64 ) 
@@ -37,14 +37,14 @@ require bits.fs
   \g Decodes a LEB128 encoded signed 64 bit integer beginning at 
   \g c-addr1 Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  64 LEB128->s 
+  LEB128->s 
 ;
 
 : i64@ ( c-addr1 -- c-addr2 i64 ) 
   \g Decodes a LEB128 encoded uninterpreted 64 bit integer beginning 
   \g at c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  64 LEB128->s 
+  LEB128->s 
 ;
 
 : u32@ ( c-addr1 -- c-addr2 u32 ) 
@@ -58,26 +58,26 @@ require bits.fs
   \g Decodes a LEB128 encoded signed 32 bit integer beginning at 
   \g c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  32 LEB128->s 
+  LEB128->s 
 ;
 
 : i32@ ( c-addr1 -- c-addr2 i32 ) 
   \g Decodes a LEB128 encoded uninterpreted 32 bit integer beginning 
   \g at c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  32 LEB128->s 
+  LEB128->s 
 ;
 
 : i16@ ( c-addr1 -- c-addr2 i16 ) 
   \g Decodes a LEB128 encoded uninterpreted 16 bit integer beginning 
   \g at c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  16 LEB128->s 
+  LEB128->s 
 ;
 
 : i8@ ( c-addr1 -- c-addr2 i8 ) 
   \g Decodes a LEB128 encoded uninterpreted 8 bit integer beginning 
   \g at c-addr1. Pushes the c-addr2 pointing at the next byte after the 
   \g end of the encoded integer as well as the integer onto the stack. 
-  8 LEB128->s 
+  LEB128->s 
 ;
