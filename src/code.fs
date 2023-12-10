@@ -2,6 +2,7 @@ require leb128.fs
 require section.fs
 
 create blocks 256 cells allot
+create arity 256 cells allot
 
 $1 constant IS_BLOCK
 $2 constant IS_LOOP
@@ -38,9 +39,9 @@ $20 constant local.get
   s" pushq %rax" compile-file compile-cr
 ;
 
-: wasm-compile-block ( block-type number-generator addr end-instruction-ptr -- addr2 )
+: wasm-compile-block ( number-generator addr end-instruction-ptr -- addr2 )
   recursive
-  { block-type number-generator end-instruction-ptr }
+  { number-generator end-instruction-ptr }
   begin
     dup c@ ~~     \ Reading instruction
     case
@@ -74,7 +75,13 @@ $20 constant local.get
 
                   IS_BLOCK blocks number-generator cells + !
 
-                  block-type number-generator 1+ end-instruction-ptr wasm-compile-block 
+                  block-type $40 = if
+                    0 arity number-generator cells + !
+                  else
+                    1 arity number-generator cells + !
+                  then
+
+                  number-generator 1+ end-instruction-ptr wasm-compile-block 
 
                   s" then_block" compile-file
                   number-generator u-to-s compile-file s" :" compile-file compile-cr          
@@ -108,7 +115,7 @@ $20 constant local.get
   s" main:" compile-file compile-cr
   s" pushq %rbp" compile-file compile-cr
 
-  $40 0 end-instruction-ptr wasm-compile-block    
+  0 end-instruction-ptr wasm-compile-block    
   s" popq %rbp" compile-file compile-cr
   s" ret" compile-file compile-cr
 ;
