@@ -2,6 +2,7 @@ run:
 	gforth src/fasm.fs ./wasm/nested_block_2.wasm
 
 test:
+	gforth src/cs-stack.fs tests/cs-stack.test.fs
 	gforth src/leb128.fs tests/leb128.test.fs
 	gforth src/magic_bytes.fs tests/magic_bytes.test.fs
 	gforth src/version_bytes.fs tests/version_bytes.test.fs

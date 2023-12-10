@@ -1,6 +1,11 @@
 require leb128.fs
 require section.fs
 
+create blocks 256 cells allot
+
+$1 constant IS_BLOCK
+$2 constant IS_LOOP
+
 \ Control Instructions
 $2 constant block.instr
 $0c constant br
@@ -18,14 +23,19 @@ $20 constant local.get
   char+       \ Forward to constant value.
   dup i32@    \ Read value.
   ~~
-  u-to-s compile-file 
+  u-to-s 
+  s" movq $" compile-file compile-file s" , %rax" compile-file compile-cr 
+  s" pushq %rax" compile-file compile-cr
   compile-cr
 ;
 
 : wasm-compile-i32.add ( addr1 -- addr2 )
   char+
-  s" add" compile-file 
-  compile-cr
+  s" " compile-file compile-cr
+  s" popq %r8" compile-file compile-cr
+  s" popq %rax" compile-file compile-cr
+  s" addq %r8, %rax" compile-file compile-cr
+  s" pushq %rax" compile-file compile-cr
 ;
 
 : wasm-compile-block ( block-type number-generator addr end-instruction-ptr -- addr2 )
@@ -39,33 +49,18 @@ $20 constant local.get
       br          of 
                   char+       \ Forward to constant value.
                   u32@        \ Read label.
-                  number-generator swap -
+                  number-generator 1- swap -
                   { jmp }
-                  s" depth block" compile-file 
+                  s" block" compile-file 
                   jmp u-to-s compile-file 
-                  s"  - " compile-file 
-                  compile-cr          
+                  s" :" compile-file compile-cr          
 
-                  \ Restoring the stack
+                  \ TODO Restoring the stack
                   
-                  block-type $40 = if
-                  \ The block has no return values
-
-                  s" 0 ?do drop loop" compile-file compile-cr
-
+                  blocks @ IS_BLOCK = if
+                    s" jmp then_block" compile-file jmp u-to-s compile-file compile-cr
                   else
-                  \ The block has one return value
-
-                  s" swap { value } 1- 0 ?do drop loop value " compile-file compile-cr
-
-                  jmp 0 = if
-                    s" loop \ Jumping the inner most label" compile-file
-                    compile-cr
-                  else
-                    jmp 1+ 0 ?do 
-                      s" leave" compile-file \ this will not work because "leave" can only leave the inner most loop
-                      compile-cr
-                    loop
+                    s" jmp block" compile-file jmp u-to-s compile-file compile-cr
                   then
 
                   endof
@@ -77,18 +72,15 @@ $20 constant local.get
                   { block-type }
                   char+ 
 
-                  s" depth { block" compile-file
-                  number-generator u-to-s compile-file 
-                  s"  } " compile-file
-                  compile-cr          
+                  s" block" compile-file
+                  number-generator u-to-s compile-file s" :" compile-file compile-cr          
 
-                  s" 1 0 do" compile-file
-                  compile-cr
+                  \ IS_BLOCK blocks number-generator cells + !
 
                   block-type number-generator 1+ end-instruction-ptr wasm-compile-block 
 
-                  s" loop \ Block has ended" compile-file
-                  compile-cr
+                  s" then_block" compile-file
+                  number-generator u-to-s compile-file s" :" compile-file compile-cr          
 
                   endof
     endcase
@@ -116,5 +108,10 @@ $20 constant local.get
   { number-of-locals }          \ Assuming no locals TODO
   number-of-locals +            \ Skipping locals because locals have always one byte size
 
+  s" main:" compile-file compile-cr
+  s" pushq %rbp" compile-file compile-cr
+
   $40 0 end-instruction-ptr wasm-compile-block    
+  s" popq %rbp" compile-file compile-cr
+  s" ret" compile-file compile-cr
 ;

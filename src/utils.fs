@@ -1,5 +1,5 @@
 0 Value fd-out
-s" ./output.fs" r/w create-file throw to fd-out
+s" ./output.s" r/w create-file throw to fd-out
 
 : u-to-s ( u -- c-addr u ) 0 <# #s #> ;
 
