@@ -9,6 +9,7 @@ $2 constant IS_LOOP
 
 \ Control Instructions
 $2 constant block.instr
+$3 constant loop.instr
 $0c constant br
 
 \ 5.4.5 Numeric Instructions
@@ -87,6 +88,30 @@ $20 constant local.get
                   number-generator u-to-s compile-file s" :" compile-file compile-cr          
 
                   endof
+      loop.instr of 
+                  char+ \ Read instruction
+                  dup c@ \ Read blocktype 
+                  { block-type }
+                  char+ 
+
+                  s" block" compile-file
+                  number-generator u-to-s compile-file s" :" compile-file compile-cr          
+
+                  IS_LOOP blocks number-generator cells + !
+
+                  block-type $40 = if
+                    0 arity number-generator cells + !
+                  else
+                    1 arity number-generator cells + !
+                  then
+
+                  number-generator 1+ end-instruction-ptr wasm-compile-block 
+
+                  s" then_block" compile-file
+                  number-generator u-to-s compile-file s" :" compile-file compile-cr          
+
+                  endof
+
     endcase
 
   dup end-instruction-ptr >=
