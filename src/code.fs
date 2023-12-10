@@ -51,13 +51,10 @@ $20 constant local.get
                   u32@        \ Read label.
                   number-generator 1- swap -
                   { jmp }
-                  s" block" compile-file 
-                  jmp u-to-s compile-file 
-                  s" :" compile-file compile-cr          
 
                   \ TODO Restoring the stack
                   
-                  blocks @ IS_BLOCK = if
+                  blocks jmp cells + @ IS_BLOCK = if
                     s" jmp then_block" compile-file jmp u-to-s compile-file compile-cr
                   else
                     s" jmp block" compile-file jmp u-to-s compile-file compile-cr
@@ -75,7 +72,7 @@ $20 constant local.get
                   s" block" compile-file
                   number-generator u-to-s compile-file s" :" compile-file compile-cr          
 
-                  \ IS_BLOCK blocks number-generator cells + !
+                  IS_BLOCK blocks number-generator cells + !
 
                   block-type number-generator 1+ end-instruction-ptr wasm-compile-block 
 
