@@ -28,6 +28,7 @@ $20 constant local.get
   u-to-s 
   s" movq $" compile-file compile-file s" , %rax" compile-file compile-cr 
   s" pushq %rax" compile-file compile-cr
+  s" inc %r15" compile-file compile-cr
   compile-cr
 ;
 
@@ -38,6 +39,7 @@ $20 constant local.get
   s" popq %rax" compile-file compile-cr
   s" addq %r8, %rax" compile-file compile-cr
   s" pushq %rax" compile-file compile-cr
+  s" dec %r15" compile-file compile-cr
 ;
 
 : wasm-compile-block ( number-generator addr end-instruction-ptr -- addr2 )
@@ -55,6 +57,32 @@ $20 constant local.get
                   { jmp }
 
                   \ TODO Restoring the stack
+                  
+                  jmp 0= if
+                    s" cleanup_block" compile-file number-generator 1- u-to-s compile-file s" :" compile-file compile-cr
+                    s" popq %rax" compile-file compile-cr
+                    s" dec %r15" compile-file compile-cr
+                    s" movq %r15, %r8" compile-file compile-cr
+                    s" cmp $0, %r8" compile-file compile-cr
+                    s" jg cleanup_block" compile-file number-generator 1- u-to-s compile-file compile-cr
+                  else
+                    s" cleanup_block" compile-file number-generator 1- u-to-s compile-file s" :" compile-file compile-cr
+                    s" popq %rax" compile-file compile-cr
+                    s" dec %r15" compile-file compile-cr
+                    s" movq %r15, %r8" compile-file compile-cr
+                    s" cmp $0, %r8" compile-file compile-cr
+                    s" jg cleanup_block" compile-file number-generator 1- u-to-s compile-file compile-cr
+
+                    jmp 0 ?do
+                      s" cleanup" compile-file I u-to-s compile-file s" _block" compile-file number-generator 1- u-to-s compile-file s" :" compile-file compile-cr
+                      s" popq %r15" compile-file compile-cr
+                      s" popq %rax" compile-file compile-cr
+                      s" dec %r15" compile-file compile-cr
+                      s" movq %r15, %r8" compile-file compile-cr
+                      s" cmp $0, %r8" compile-file compile-cr
+                      s" jg cleanup" compile-file I u-to-s compile-file s" _block" compile-file number-generator 1- u-to-s compile-file compile-cr
+                    loop
+                  then
                   
                   blocks jmp cells + @ IS_BLOCK = if
                     s" jmp then_block" compile-file jmp u-to-s compile-file compile-cr
@@ -82,7 +110,9 @@ $20 constant local.get
                     1 arity number-generator cells + !
                   then
 
+                  s" movq $0, %r15" compile-file compile-cr
                   number-generator 1+ end-instruction-ptr wasm-compile-block 
+                  s" pushq %r15" compile-file compile-cr
 
                   s" then_block" compile-file
                   number-generator u-to-s compile-file s" :" compile-file compile-cr          
@@ -105,7 +135,9 @@ $20 constant local.get
                     1 arity number-generator cells + !
                   then
 
+                  s" movq $0, %r15" compile-file compile-cr
                   number-generator 1+ end-instruction-ptr wasm-compile-block 
+                  s" pushq %r15" compile-file compile-cr
 
                   s" then_block" compile-file
                   number-generator u-to-s compile-file s" :" compile-file compile-cr          
@@ -137,10 +169,14 @@ $20 constant local.get
   { number-of-locals }          \ Assuming no locals TODO
   number-of-locals +            \ Skipping locals because locals have always one byte size
 
+	s" .globl	main" compile-file compile-cr
+	s" .type	main, @function" compile-file compile-cr
+
   s" main:" compile-file compile-cr
   s" pushq %rbp" compile-file compile-cr
 
   0 end-instruction-ptr wasm-compile-block    
+  s" popq %r15" compile-file compile-cr
   s" popq %rbp" compile-file compile-cr
   s" ret" compile-file compile-cr
 ;
