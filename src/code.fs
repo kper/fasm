@@ -2,8 +2,9 @@ require leb128.fs
 require section.fs
 
 \ Control Instructions
-$2 constant block.instr
-$0c constant br
+$02 constant block.instr
+$0B constant block.end
+$0C constant br
 
 \ 5.4.5 Numeric Instructions
 $41 constant i32.const
@@ -17,7 +18,6 @@ $20 constant local.get
 : wasm-compile-i32.const ( addr1 -- addr2 )
   char+       \ Forward to constant value.
   dup i32@    \ Read value.
-  ~~
   u-to-s compile-file 
   compile-cr
 ;
@@ -27,6 +27,9 @@ $20 constant local.get
   s" add" compile-file 
   compile-cr
 ;
+
+\ : wasm-compile-br
+\ ;
 
 : wasm-compile-block ( block-type number-generator addr end-instruction-ptr -- addr2 )
   recursive
@@ -61,7 +64,7 @@ $20 constant local.get
                   endif 
 
                   endof
-      11          of char+ exit endof
+      block.end   of char+ exit endof
       local.get   of char+ char+ endof
       block.instr of 
                   char+ \ Read instruction
