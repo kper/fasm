@@ -5,10 +5,10 @@
 : cs-swap ( d0/o0 d1/o1 -- d1/o1 d0/o0 )
   \g Swaps the top two control stack frames.
   \
-  { x0 x1 x2 x3 }   \ Top control stack frame.
-  { y0 y1 y2 y3 }   \ Bottom control stack frame.
-  y0 y1 y2 y3       \ Swap.
+  { x0 x1 x2 x3 }  \ Top control stack frame.
+  { y0 y1 y2 y3 }  \ Bottom control stack frame.
   x0 x1 x2 x3
+  y0 y1 y2 y3      \ Swap.
 ;
 
 : wasm-block ( compilation: -- dest orig )
@@ -45,11 +45,9 @@
   0 0 0 dest      \ Phony control flow stack item.
 ; immediate
 
-\ : wasm-br 
-\   postpone ahead 
-\ ; immediate
-
 : wasm-br ( compilation: lvl -- )
+  \g WASm unconditional jump.
+  \
   2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
                     \ on the control flow stack. Pick the dest-orig 
                     \ frame pair according to nesting level. Then 
@@ -69,66 +67,33 @@
   cs-drop           \ Remove destinatin control frame.
 ; immediate
 
-\ : wasm-orig?
-\   dup dead-orig 1+ live-orig within
-\ ;
-
-\ : wasm-block-end
-\   dup dead-orig 1+ live-orig within 0= if
-\     postpone then
-\   endif 
-\ ; immediate
-
-\ This one loops forever.
 \ : main
-\   begin
-\     s" Hello " type
-\   again
-\ ;
-
-\ This skips ahead.
-\ : main
-\   s" we see this " type cr
-\   ahead
-\     s" should not print this " type cr
-\   then
-\   s" but this we should see " type cr
-\ ;
-
-\ : main
+\   s" Start Program " type cr
 \   wasm-block
+\     s" Start Block 0 " type cr
 \     wasm-block
-\       s" we see this " type cr
-\       \ ..s
-\       wasm-br
-\       \ ..s
-\       s" should not print this " type cr
-\       \ ..s
-\     wasm-block-end
-\     \ ..s
-\     s" should not print this as well " type cr
+\       s" Start Block 1 " type cr
+\       [ 0 ] wasm-br
+\       s" End Block 1 " type cr
+\     wasm-end
+\     s" End Block 0 " type cr
+\   wasm-end
+\   s" End Program " type cr  
+\ ;
+
+\ : main
+\   wasm-loop
+\     s" outer loop " type cr
+\     wasm-loop
+\       s" inner loop " type cr
+\       [ 0 ] wasm-br
+\       s" inner loop - !!! " type cr
+\     wasm-end
+\     s" outer-loop - !!! " type cr
 \     \ wasm-br
-\   wasm-block-end
+\   wasm-end
 \   s" but this we should see " type cr  
 \ ;
-
-: main
-  wasm-loop
-    s" outer loop " type cr
-    wasm-loop
-      s" inner loop " type cr
-      \ ..s
-      [ 0 ] wasm-br
-      \ ..s
-      s" inner loop - !!! " type cr
-      \ ..s
-    wasm-end
-    \ ..s
-    s" outer-loop - !!! " type cr
-    \ wasm-br
-  wasm-end
-  s" but this we should see " type cr  
-;
 
 main
 
