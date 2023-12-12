@@ -95,6 +95,6 @@
 \   s" but this we should see " type cr  
 \ ;
 
-main
+\ main
 
 bye
