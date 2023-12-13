@@ -68,8 +68,7 @@ $40 constant VOID
     case
       block.begin of wasm-compile-block.begin endof
       loop.begin  of wasm-compile-loop.begin  endof
-                  \ TODO: what does exit do?
-      block.end   of wasm-compile-block.end exit endof
+      block.end   of wasm-compile-block.end   endof
       br          of wasm-compile-br          endof
       local.get   of wasm-compile-local.get   endof
       i32.const   of wasm-compile-i32.const   endof
