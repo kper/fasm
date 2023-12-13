@@ -11,18 +11,26 @@ s" ./output.fs" r/w create-file throw to fd-out
   s"  " fd-out write-line throw
 ;
 
-: write ( str -- )
+: str->out ( str -- )
+  \g Writes a string without an additional 
+  \g newline character to output.
   fd-out write-file throw
 ;
 
-: write-ln ( str -- )
+: ln->out ( str -- )
+  \g Writes a string with an additional
+  \g newline character to output.
   fd-out write-line throw
 ;
 
-: write-num ( u -- )
-  u-to-s fd-out write-file throw
+: num->out ( u -- )
+  \g Writes a number to output.
+  u-to-s str->out
+  \ TODO: additional space required?
+  s"  "  str->out
 ;
 
-: write-cr ( -- ) 
-  s"  " fd-out write-line throw
+: cr->out ( -- ) 
+  \g Writes a newline character to output.
+  s"  " ln->out
 ;
