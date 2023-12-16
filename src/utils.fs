@@ -30,6 +30,10 @@ s" ./output.fs" r/w create-file throw to fd-out
   s"  "  str->out
 ;
 
+: mun->out ( u -- )
+  num->out 
+;
+
 : cr->out ( -- ) 
   \g Writes a newline character to output.
   s"  " ln->out
