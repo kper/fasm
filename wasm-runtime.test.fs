@@ -9,19 +9,19 @@ require wasm-runtime.fs
 
 ;
 
-: main
-  s" Start Program " type cr
-  0 wasm-block
-    s" Start Block 0 " type cr
-    0 wasm-block
-      s" Start Block 1 " type cr
-      [ 0 ] wasm-br
-      s" End Block 1 " type cr
-    wasm-end
-    s" End Block 0 " type cr
-  wasm-end
-  s" End Program " type cr  
-;
+\ : main
+\   s" Start Program " type cr
+\   0 wasm-block
+\     s" Start Block 0 " type cr
+\     0 wasm-block
+\       s" Start Block 1 " type cr
+\       [ 0 ] wasm-br
+\       s" End Block 1 " type cr
+\     wasm-end
+\     s" End Block 0 " type cr
+\   wasm-end
+\   s" End Program " type cr  
+\ ;
 
 \ : main
 \   0 wasm-loop
