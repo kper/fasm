@@ -54,7 +54,7 @@ create wasm-rp       1 cells allot  \ Pointer.
   postpone then   \ Block entry jump target.
 ; immediate
 
-: wasm-loop ( compilation: -- dest orig ; runtime: u -- )
+: wasm-loop ( compilation: -- dest orig ; runtime: arity -- )
   \g Starts a new WASM loop.
   \g
   \g           +-- wasm-br
@@ -112,7 +112,7 @@ create wasm-rp       1 cells allot  \ Pointer.
   0 0 0 dest      \ Phony control flow stack item.
 ; immediate
 
-: wasm-br ( compilation: lvl -- ; runtime: -- )
+: wasm-br ( compilation: lvl -- ; runtime: lvl -- )
   \g WASM unconditional jump. Restores the original stack position
   \g and pushes the stack items to return if any before it jumps to
   \g the beginning of the block or loop.
@@ -121,7 +121,11 @@ create wasm-rp       1 cells allot  \ Pointer.
                     \ on the control flow stack. Pick the dest-orig 
                     \ frame pair according to nesting level. Then 
                     \ take the dest part of the pair.
-  
+  postpone spos postpone wasm-rp postpone @ postpone 1- postpone cells postpone + postpone @ postpone sp!
+  \ numret wasm-rp @ 1- cells + @ 0= if
+  \ spos wasm-rp @ 1- cells + @
+  \ else
+  \ endif
   \ postpone r>       \ Fetch return address.
   \ postpone r>       \ Load the number of stack items to return.
   \ postpone 0=
@@ -205,7 +209,7 @@ create wasm-rp       1 cells allot  \ Pointer.
     s" outer loop " type cr
     0 wasm-loop
       s" inner loop " type cr
-      \ [ 0 ] wasm-br
+      [ 0 ] wasm-br
       s" inner loop - !!! " type cr
     wasm-end
     s" outer-loop - !!! " type cr
