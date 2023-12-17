@@ -1,54 +1,85 @@
-: RTEST RP@ DUP >R RP@ RDROP SWAP - ;
+256 constant RTS-DEPTH  \ Runtime stack depth.
 
-RTEST CONSTANT RSTEP
-RP@ CONSTANT RBIAS
+\ Runtime stack of stack pointers.
+create wasm-rts-sp    RTS-DEPTH cells allot  
+\ Runtime stack of block arities.
+create wasm-rts-arity RTS-DEPTH cells allot  
+\ WASM runtime stack pointer.
+create wasm-rtsp              1 cells allot  
 
-: .RETURNSTACK \ --
-  RP@ RBIAS 
-  DO I @ U. RSTEP
-  +LOOP CR ;
+0 wasm-rtsp !  \ Initialize pointer.
 
-: .cs 
-  .s 
-; immediate
+\ : .cs 
+\   .s 
+\ ; immediate
 
-create wasm-sp 256 cells allot  \ Stack of stack pointer positions.
-create wasm-rt 256 cells allot  \ Stack of number of returned block items.
-create wasm-rp   1 cells allot  \ Pointer.
+\ : wasm-debug
+\   s" Stack:     " type
+\   .s cr
+\   s" RTSP:      " type
+\   wasm-rtsp @ . cr
+\   s" RTS Arity: " type
+\   wasm-rts-arity @ . cr
+\   s" RTS SP:    " type
+\   wasm-rts-sp @ . cr
+\   cr
+\ ;
 
-0 wasm-rp !  \ Initialize pointer.
-
-: wasm-store-sp
-  sp@ wasm-sp !
+: wasm-rtsp++ ( -- )
+  \g Increment the WASM runtime stack pointer.
+  wasm-rtsp @ cell+ wasm-rtsp !
 ;
 
-: wasm-store-rt
-  wasm-rt !
+: wasm-rtsp-- ( -- )
+  \g Decrement the WASM runtime stack pointer.
+  wasm-rtsp @ cell- wasm-rtsp !
 ;
 
-: wasm-rp++ 
-  wasm-rp @ 1+ wasm-rp !
+: wasm-rts-sp@ ( -- sp )
+  \g Push the stack pointer stored at the current position
+  \g of the WASM runtime stack pointer.
+  wasm-rts-sp 
+  wasm-rtsp @ cell- 
+  + @
 ;
 
-: wasm-rp-- 
-  wasm-rp @ 1- wasm-rp !
+: wasm-rts-arity@ ( -- arity )
+  \g Push the arity stored at the current position
+  \g of the WASM runtime stack pointer.
+  wasm-rts-arity 
+  wasm-rtsp @ cell- 
+  + @
 ;
 
-: wasm-sp@
-  wasm-sp wasm-rp @ 1- cells + @
+: wasm-store-stack ( arity -- )
+  \g Store the current stack pointer and the block aritiy
+  \g on the WASM runtime stack.
+  wasm-rts-arity wasm-rtsp @ + !
+  sp@ wasm-rts-sp wasm-rtsp @ + !
+  wasm-rtsp++
 ;
 
-: wasm-rt@
-  wasm-rt wasm-rp @ 1- cells + @
+: wasm-skip-levels ( lvl -- )
+  \g Restore WASM runtime stack pointer lvl items. If lvl is 0 
+  \g the pointer remains at its current position.
+  \
+  wasm-rtsp @   \ Load current pointer to WASM runtime stack.
+  swap cells -  \ Drop lvl items.
+  wasm-rtsp !   \ Update pointer to WASM runtime stack.
 ;
 
-: wasm-restore-stack
-  wasm-rt@ 0= if
-    wasm-sp@ sp!
+: wasm-restore-stack ( v -- epsilon | v )
+  \g Restores the original stack position. If the block arity
+  \g is zeronon-zero staches the TOS item to the retur stack
+  \g before it restores the stack position and then pushes the
+  \g stashed value back onto the stack.
+  \
+  wasm-rts-arity@ 0= if
+    wasm-rts-sp@ sp!  \ Restore stack pointer.
   else
-    >r
-    wasm-sp@ sp!
-    r>
+    swap >r           \ Stash top item to return.
+    wasm-rts-sp@ sp!  \ Restore stack pointer.
+    r>                \ Restore top item to return.
   endif
 ;
 
@@ -61,7 +92,7 @@ create wasm-rp   1 cells allot  \ Pointer.
   y0 y1 y2 y3      \ Swap.
 ;
 
-: wasm-block ( compilation: -- dest orig ; runtime: u -- )
+: wasm-block ( compilation: -- dest orig ; runtime: arity -- )
   \g Starts a new WASM block. Each block has a fixed number
   \g of returned stack items. These are preserved before the
   \g remaining stack contents is discarded and popped on
@@ -74,9 +105,7 @@ create wasm-rp   1 cells allot  \ Pointer.
   \g   +-> then    |
   \g               +-> wasm-end
   \
-  postpone wasm-store-rt
-  postpone wasm-store-sp
-  postpone wasm-rp++
+  postpone wasm-store-stack
   postpone ahead  \ On block entry jump to then.
   postpone begin  \ Jump target for branches inside the block.
   cs-swap         \ Put block entry origin on top.
@@ -95,34 +124,37 @@ create wasm-rp   1 cells allot  \ Pointer.
   \g           |
   \g           +-> (don't care)
   \
-  postpone wasm-store-rt
-  postpone wasm-store-sp
-  postpone wasm-rp++
+  postpone wasm-store-stack
   postpone begin  \ Jump target for branches inside the block.
   0 0 0 dest      \ Phony control flow stack item.
 ; immediate
 
 : wasm-br ( compilation: lvl -- ; runtime: lvl -- )
   \g WASM unconditional jump. Restores the original stack position
-  \g and pushes the stack items to return if any before it jumps to
-  \g the beginning of the block or loop.
+  \g and pushes the stack items to return, if any, back onto the 
+  \g stack before it jumps to the beginning of the block or loop.
   \
   2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
                     \ on the control flow stack. Pick the dest-orig 
                     \ frame pair according to nesting level. Then 
                     \ take the dest part of the pair.
+  postpone wasm-skip-levels
   postpone wasm-restore-stack
   postpone again    \ Jump to the start of the block or loop.
 ; immediate
 
 : wasm-br-if ( compilation: lvl -- ; runtime: b -- )
-  \g WASM conditinal jump. If TOS is non-zero then jump.
+  \g WASM conditinal jump. If TOS is non-zero then jump. Restores 
+  \g the original stack position and pushes the stack items to 
+  \g return, if any, back onto the stack before it jumps to the 
+  \g beginning of the block or loop.
   \
   postpone if
   2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
                     \ on the control flow stack. Pick the dest-orig 
                     \ frame pair according to nesting level. Then 
                     \ take the dest part of the pair.
+  postpone wasm-skip-levels
   postpone wasm-restore-stack
   postpone again    \ Jump to the start of the block or loop.
   postpone endif
@@ -138,7 +170,7 @@ create wasm-rp   1 cells allot  \ Pointer.
     postpone then   \ Jump target for the WASM block.
   endif
   cs-drop           \ Remove destinatin control frame.
-  postpone wasm-rp--
+  postpone wasm-rtsp--
 ; immediate
 
 \ : main
@@ -156,18 +188,18 @@ create wasm-rp   1 cells allot  \ Pointer.
 \ ;
 
 : main
-  \ 0 wasm-loop
+  0 wasm-loop
+    40
     s" outer loop " type cr
-    1 wasm-loop
-      .s
+    0 wasm-loop
       s" inner loop " type cr
       41
       42
-      [ 0 ] wasm-br
+      0 [ 0 ] wasm-br
       s" inner loop - !!! " type cr
     wasm-end
     s" outer-loop - !!! " type cr
-  \ wasm-end
+  wasm-end
   s" but this we should see " type cr  
 ;
 
