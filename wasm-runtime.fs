@@ -58,7 +58,6 @@
   \g and pushes the stack items to return if any before it jumps to
   \g the beginning of the block or loop.
   \
-    .cs
   2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
                     \ on the control flow stack. Pick the dest-orig 
                     \ frame pair according to nesting level. Then 
@@ -77,13 +76,17 @@
   postpone again    \ Jump to the start of the block or loop.
 ; immediate
 
-\ : wasm-br-if ( compilation: lvl -- ; runtime: b -- )
-\   \g WASM conditinal jump. If TOS is non-zero then jump.
-\   \
-\   postpone if
-\   wasm-br
-\   postpone endif
-\ ; immediate
+: wasm-br-if ( compilation: lvl -- ; runtime: b -- )
+  \g WASM conditinal jump. If TOS is non-zero then jump.
+  \
+  postpone if
+  2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
+                    \ on the control flow stack. Pick the dest-orig 
+                    \ frame pair according to nesting level. Then 
+                    \ take the desp part of the pair.
+  postpone again    \ Jump to the start of the block or loop.
+  postpone endif
+; immediate
 
 : wasm-end ( compilation: dest orig -- )
   \g Ends a WASM block or loop.
