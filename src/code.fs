@@ -9,7 +9,6 @@ $0C constant br
 $20 constant local.get
 $41 constant i32.const
 \ 0x42 constant i64.const
-$6A constant i32.add
 $45 constant i32.eqz
 $46 constant i32.eq
 $47 constant i32.ne
@@ -21,6 +20,14 @@ $4c constant i32.les
 $4d constant i32.leu
 $4e constant i32.ges
 $4f constant i32.geu
+
+$6A constant i32.add
+$6b constant i32.sub
+$6c constant i32.mul
+$6d constant i32.divs
+$6e constant i32.divu
+$6f constant i32.rems
+$70 constant i32.remu
 
 \ Block return types.
 $40 constant VOID
@@ -127,6 +134,36 @@ $40 constant VOID
   s" u>=" ln->out
 ;
 
+: wasm-compile-i32.sub ( addr1 -- addr2 )
+  char+
+  s" sub" ln->out
+;
+
+: wasm-compile-i32.mul ( addr1 -- addr2 )
+  char+
+  s" mul" ln->out
+;
+
+: wasm-compile-i32.div_s ( addr1 -- addr2 )
+  char+
+  s" /" ln->out
+;
+
+: wasm-compile-i32.div_u ( addr1 -- addr2 )
+  char+
+  s" exit" ln->out
+;
+
+: wasm-compile-i32.rem_s ( addr1 -- addr2 )
+  char+
+  s" mod" ln->out
+;
+
+: wasm-compile-i32.rem_u ( addr1 -- addr2 )
+  char+
+  s" exit" ln->out
+;
+
 : wasm-compile-instructions ( addr1 code-end -- addr2 )
   { code-end }
   begin
@@ -150,6 +187,12 @@ $40 constant VOID
       i32.leu     of wasm-compile-i32.le_u    endof
       i32.ges     of wasm-compile-i32.ge_s    endof
       i32.geu     of wasm-compile-i32.ge_u    endof
+      i32.sub     of wasm-compile-i32.sub     endof
+      i32.mul     of wasm-compile-i32.mul     endof
+      i32.divu    of wasm-compile-i32.div_u   endof
+      i32.divs    of wasm-compile-i32.div_s   endof
+      i32.rems    of wasm-compile-i32.rem_s   endof
+      i32.remu    of wasm-compile-i32.rem_u   endof
     endcase
   dup code-end >= until
 ;
