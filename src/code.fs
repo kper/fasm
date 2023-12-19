@@ -29,6 +29,15 @@ $6e constant i32.divu
 $6f constant i32.rems
 $70 constant i32.remu
 
+$71 constant i32.and
+$72 constant i32.or
+$73 constant i32.xor
+$74 constant i32.shl
+$75 constant i32.shrs
+$76 constant i32.shru
+$77 constant i32.rotl
+$78 constant i32.rotr
+
 \ Block return types.
 $40 constant VOID
 
@@ -151,7 +160,7 @@ $40 constant VOID
 
 : wasm-compile-i32.div_u ( addr1 -- addr2 )
   char+
-  s" exit" ln->out
+  s" bye" ln->out
 ;
 
 : wasm-compile-i32.rem_s ( addr1 -- addr2 )
@@ -161,7 +170,47 @@ $40 constant VOID
 
 : wasm-compile-i32.rem_u ( addr1 -- addr2 )
   char+
-  s" exit" ln->out
+  s" bye" ln->out
+;
+
+: wasm-compile-i32.and ( addr1 -- addr2 )
+  char+
+  s" and" ln->out
+;
+
+: wasm-compile-i32.or ( addr1 -- addr2 )
+  char+
+  s" or" ln->out
+;
+
+: wasm-compile-i32.xor ( addr1 -- addr2 )
+  char+
+  s" xor" ln->out
+;
+
+: wasm-compile-i32.shl ( addr1 -- addr2 )
+  char+
+  s" lshift" ln->out
+;
+
+: wasm-compile-i32.shr_s ( addr1 -- addr2 )
+  char+
+  s" /2" ln->out
+;
+
+: wasm-compile-i32.shr_u ( addr1 -- addr2 )
+  char+
+  s" rshift" ln->out
+;
+
+: wasm-compile-i32.rotl ( addr1 -- addr2 )
+  char+
+  s" bye" ln->out
+;
+
+: wasm-compile-i32.rotr ( addr1 -- addr2 )
+  char+
+  s" bye" ln->out
 ;
 
 : wasm-compile-instructions ( addr1 code-end -- addr2 )
@@ -193,6 +242,14 @@ $40 constant VOID
       i32.divs    of wasm-compile-i32.div_s   endof
       i32.rems    of wasm-compile-i32.rem_s   endof
       i32.remu    of wasm-compile-i32.rem_u   endof
+      i32.and     of wasm-compile-i32.and     endof
+      i32.or      of wasm-compile-i32.or      endof
+      i32.xor     of wasm-compile-i32.xor     endof
+      i32.shl     of wasm-compile-i32.shl     endof
+      i32.shrs    of wasm-compile-i32.shr_s   endof
+      i32.shru    of wasm-compile-i32.shr_u   endof 
+      i32.rotl    of wasm-compile-i32.rotl    endof
+      i32.rotr    of wasm-compile-i32.rotr    endof
     endcase
   dup code-end >= until
 ;
