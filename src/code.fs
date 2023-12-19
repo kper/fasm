@@ -10,17 +10,17 @@ $20 constant local.get
 $41 constant i32.const
 \ 0x42 constant i64.const
 $6A constant i32.add
-$69 constant i32.eqz
-$70 constant i32.eq
-$71 constant i32.ne
-$72 constant i32.lts
-$73 constant i32.ltu
-$74 constant i32.gts
-$75 constant i32.gtu
-$76 constant i32.les
-$77 constant i32.leu
-$78 constant i32.ges
-$79 constant i32.geu
+$45 constant i32.eqz
+$46 constant i32.eq
+$47 constant i32.ne
+$48 constant i32.lts
+$49 constant i32.ltu
+$4a constant i32.gts
+$4b constant i32.gtu
+$4c constant i32.les
+$4d constant i32.leu
+$4e constant i32.ges
+$4f constant i32.geu
 
 \ Block return types.
 $40 constant VOID
