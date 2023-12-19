@@ -7,6 +7,8 @@ $03 constant loop.begin
 $0B constant block.end
 $0C constant br
 $20 constant local.get
+$21 constant local.get
+$22 constant local.tee
 $41 constant i32.const
 \ 0x42 constant i64.const
 $45 constant i32.eqz
@@ -75,7 +77,26 @@ $40 constant VOID
 
 : wasm-compile-local.get
   char+                 \ Skip op-code.
-  char+
+  u32@
+  s" local-stack " str->out 
+  num->out 
+  s" cells + @" str->out
+;
+
+: wasm-compile-local.set
+  char+                 \ Skip op-code.
+  u32@
+  s" local-stack " str->out 
+  num->out 
+  s" cells + !" str->out
+;
+
+: wasm-compile-local.tee
+  char+                 \ Skip op-code.
+  u32@
+  s" dup local-stack " str->out 
+  num->out 
+  s" cells + !" str->out
 ;
 
 : wasm-compile-i32.const ( addr1 -- addr2 )
@@ -223,6 +244,8 @@ $40 constant VOID
       block.end   of wasm-compile-block.end   endof
       br          of wasm-compile-br          endof
       local.get   of wasm-compile-local.get   endof
+      local.set   of wasm-compile-local.set   endof
+      local.tee   of wasm-compile-local.tee   endof
       i32.const   of wasm-compile-i32.const   endof
       i32.add     of wasm-compile-i32.add     endof
       i32.eqz     of wasm-compile-i32.eqz     endof

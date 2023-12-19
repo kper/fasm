@@ -1,4 +1,5 @@
 256 constant RTS-DEPTH  \ Runtime stack depth.
+64  constant MAX-LOCALS \ Max supported locals.
 
 \ Runtime stack of stack pointers.
 create wasm-rts-sp    RTS-DEPTH cells allot  
@@ -6,6 +7,8 @@ create wasm-rts-sp    RTS-DEPTH cells allot
 create wasm-rts-arity RTS-DEPTH cells allot  
 \ WASM runtime stack pointer.
 create wasm-rtsp              1 cells allot  
+\ Local stack
+create local-stack    MAX-LOCALS cells allot
 
 0 wasm-rtsp !  \ Initialize pointer.
 
