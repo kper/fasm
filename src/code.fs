@@ -10,6 +10,17 @@ $20 constant local.get
 $41 constant i32.const
 \ 0x42 constant i64.const
 $6A constant i32.add
+$69 constant i32.eqz
+$70 constant i32.eq
+$71 constant i32.ne
+$72 constant i32.lts
+$73 constant i32.ltu
+$74 constant i32.gts
+$75 constant i32.gtu
+$76 constant i32.les
+$77 constant i32.leu
+$78 constant i32.ges
+$79 constant i32.geu
 
 \ Block return types.
 $40 constant VOID
@@ -61,6 +72,61 @@ $40 constant VOID
   s" add" ln->out
 ;
 
+: wasm-compile-i32.eqz ( addr1 -- addr2 )
+  char+            \ Skip op-code.
+  s" 0=" ln->out
+;
+
+: wasm-compile-i32.eq ( addr1 -- addr2 )
+  char+
+  s" =" ln->out
+;
+
+: wasm-compile-i32.ne ( addr1 -- addr2 )
+  char+
+  s" <>" ln->out
+;
+
+: wasm-compile-i32.lt_s ( addr1 -- addr2 )
+  char+
+  s" <" ln->out
+;
+
+: wasm-compile-i32.lt_u ( addr1 -- addr2 )
+  char+
+  s" u<" ln->out
+;
+
+: wasm-compile-i32.gt_s ( addr1 -- addr2 )
+  char+
+  s" >" ln->out
+;
+
+: wasm-compile-i32.gt_u ( addr1 -- addr2 )
+  char+
+  s" u>" ln->out
+;
+
+: wasm-compile-i32.le_s ( addr1 -- addr2 )
+  char+
+  s" <=" ln->out
+;
+
+: wasm-compile-i32.le_u ( addr1 -- addr2 )
+  char+
+  s" u>=" ln->out
+;
+
+: wasm-compile-i32.ge_s ( addr1 -- addr2 )
+  char+
+  s" >=" ln->out
+;
+
+: wasm-compile-i32.ge_u ( addr1 -- addr2 )
+  char+
+  s" u>=" ln->out
+;
+
 : wasm-compile-instructions ( addr1 code-end -- addr2 )
   { code-end }
   begin
@@ -73,6 +139,17 @@ $40 constant VOID
       local.get   of wasm-compile-local.get   endof
       i32.const   of wasm-compile-i32.const   endof
       i32.add     of wasm-compile-i32.add     endof
+      i32.eqz     of wasm-compile-i32.eqz     endof
+      i32.eq      of wasm-compile-i32.eq      endof
+      i32.ne      of wasm-compile-i32.ne      endof
+      i32.lts     of wasm-compile-i32.lt_s    endof
+      i32.ltu     of wasm-compile-i32.lt_u    endof
+      i32.gts     of wasm-compile-i32.gt_s    endof
+      i32.gtu     of wasm-compile-i32.gt_u    endof
+      i32.les     of wasm-compile-i32.le_s    endof
+      i32.leu     of wasm-compile-i32.le_u    endof
+      i32.ges     of wasm-compile-i32.ge_s    endof
+      i32.geu     of wasm-compile-i32.ge_u    endof
     endcase
   dup code-end >= until
 ;
