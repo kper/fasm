@@ -9,3 +9,6 @@ test:
 	gforth src/compiler.fs src/section.fs tests/section.test.fs
 	gforth src/utils.fs tests/utils.test.fs
 	gforth src/lib/block.fs tests/lib/block.test.fs
+
+test-runtime:
+	gforth wasm-runtime.fs wasm-runtime.test.fs

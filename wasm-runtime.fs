@@ -77,7 +77,7 @@ create wasm-rtsp              1 cells allot
   wasm-rts-arity@ 0= if
     wasm-rts-sp@ sp!  \ Restore stack pointer.
   else
-    swap >r           \ Stash top item to return.
+    >r                \ Stash top item to return.
     wasm-rts-sp@ sp!  \ Restore stack pointer.
     r>                \ Restore top item to return.
   endif
@@ -169,40 +169,7 @@ create wasm-rtsp              1 cells allot
   else
     postpone then   \ Jump target for the WASM block.
   endif
-  cs-drop           \ Remove destinatin control frame.
+  cs-drop           \ Remove destination control frame.
+  \ TODO: wasm-restore-stack?
   postpone wasm-rtsp--
 ; immediate
-
-\ : main
-\   s" Start Program " type cr
-\   0 wasm-block
-\     s" Start Block 0 " type cr
-\     0 wasm-block
-\       s" Start Block 1 " type cr
-\       [ 0 ] wasm-br
-\       s" End Block 1 " type cr
-\     wasm-end
-\     s" End Block 0 " type cr
-\   wasm-end
-\   s" End Program " type cr  
-\ ;
-
-: main
-  0 wasm-loop
-    40
-    s" outer loop " type cr
-    0 wasm-loop
-      s" inner loop " type cr
-      41
-      42
-      0 [ 0 ] wasm-br
-      s" inner loop - !!! " type cr
-    wasm-end
-    s" outer-loop - !!! " type cr
-  wasm-end
-  s" but this we should see " type cr  
-;
-
-main
-
-bye
