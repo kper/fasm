@@ -156,6 +156,81 @@ test5-1
 ;
 test6
 
+\ Multiple blocks with single br.
+: test7
+  s" Test 7 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      0 [ 0 ] wasm-br
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  27 test-equal
+;
+test7
+
+: test7-1
+  s" Test 7-1 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      1 [ 1 ] wasm-br
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  19 test-equal
+;
+test7-1
+
+: test7-2
+  s" Test 7-2 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      0 wasm-block
+        4 +
+        1 [ 1 ] wasm-br
+        8 +
+      wasm-end
+      16 +
+    wasm-end
+    32 +
+  wasm-end
+  39 test-equal
+;
+test7-2
+
+: test7-3
+  s" Test 7-3 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      0 wasm-block
+        4 +
+        2 [ 2 ] wasm-br
+        8 +
+      wasm-end
+      16 +
+    wasm-end
+    32 +
+  wasm-end
+  7 test-equal
+;
+test7-3
+
 \ Single loop with single br.
 \ : test6
 \   s" Test 6 .. " type
