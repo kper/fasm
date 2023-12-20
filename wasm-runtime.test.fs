@@ -237,7 +237,7 @@ test7-3
   0
   0 wasm-block
     1 +
-    0 [ 0 ] wasm-br-if
+    0 0 [ 0 ] wasm-br-if
     2 +
   wasm-end
   4 +
