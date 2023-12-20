@@ -143,12 +143,13 @@ create wasm-rtsp              1 cells allot
   postpone again    \ Jump to the start of the block or loop.
 ; immediate
 
-: wasm-br-if ( compilation: lvl -- ; runtime: b -- )
+: wasm-br-if ( compilation: lvl -- ; runtime: b lvl -- )
   \g WASM conditinal jump. If TOS is non-zero then jump. Restores 
   \g the original stack position and pushes the stack items to 
   \g return, if any, back onto the stack before it jumps to the 
   \g beginning of the block or loop.
   \
+  postpone swap     \ Put decission variable to TOS.
   postpone if
   2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
                     \ on the control flow stack. Pick the dest-orig 
@@ -157,6 +158,8 @@ create wasm-rtsp              1 cells allot
   postpone wasm-skip-levels
   postpone wasm-restore-stack
   postpone again    \ Jump to the start of the block or loop.
+  postpone else
+  postpone drop     \ We did not jump so drop lvl.
   postpone endif
 ; immediate
 
