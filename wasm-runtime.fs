@@ -9,9 +9,9 @@ create wasm-rtsp              1 cells allot
 
 0 wasm-rtsp !  \ Initialize pointer.
 
-\ : .cs 
-\   .s 
-\ ; immediate
+: .cs 
+  .s 
+; immediate
 
 \ : wasm-debug
 \   s" Stack:     " type
@@ -83,15 +83,6 @@ create wasm-rtsp              1 cells allot
   endif
 ;
 
-: cs-swap ( d0/o0 d1/o1 -- d1/o1 d0/o0 )
-  \g Swaps the top two control stack frames.
-  \
-  { x0 x1 x2 x3 }  \ Top control stack frame.
-  { y0 y1 y2 y3 }  \ Bottom control stack frame.
-  x0 x1 x2 x3
-  y0 y1 y2 y3      \ Swap.
-;
-
 : wasm-block ( compilation: -- dest orig ; runtime: arity -- )
   \g Starts a new WASM block. Each block has a fixed number
   \g of returned stack items. These are preserved before the
@@ -108,9 +99,8 @@ create wasm-rtsp              1 cells allot
   postpone wasm-store-stack
   postpone ahead  \ On block entry jump to then.
   postpone begin  \ Jump target for branches inside the block.
-  cs-swap         \ Put block entry origin on top.
   postpone ahead  \ Jump to the end of the block.
-  cs-swap         \ Put block entry origin on top.
+  2 cs-roll       \ Put block entry origin on top.
   postpone then   \ Block entry jump target.
 ; immediate
 
@@ -134,32 +124,33 @@ create wasm-rtsp              1 cells allot
   \g and pushes the stack items to return, if any, back onto the 
   \g stack before it jumps to the beginning of the block or loop.
   \
-  2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
-                    \ on the control flow stack. Pick the dest-orig 
-                    \ frame pair according to nesting level. Then 
-                    \ take the dest part of the pair.
+  2 * 1 + cs-pick  \ wasm-block and wasm-loop both add two frames
+                   \ on the control flow stack. Pick the dest-orig 
+                   \ frame pair according to nesting level. Then 
+                   \ take the dest part of the pair.
   postpone wasm-skip-levels
   postpone wasm-restore-stack
-  postpone again    \ Jump to the start of the block or loop.
+  postpone again   \ Jump to the start of the block or loop.
 ; immediate
 
 : wasm-br-if ( compilation: lvl -- ; runtime: b lvl -- )
-  \g WASM conditinal jump. If TOS is non-zero then jump. Restores 
+  \g WASM conditional jump. If TOS is non-zero then jump. Restores 
   \g the original stack position and pushes the stack items to 
   \g return, if any, back onto the stack before it jumps to the 
   \g beginning of the block or loop.
   \
-  postpone swap     \ Put decission variable to TOS.
+  2 * 1 + cs-pick  \ wasm-block and wasm-loop both add two frames
+                   \ on the control flow stack. Pick the dest-orig 
+                   \ frame pair according to nesting level. Then 
+                   \ take the dest part of the pair.
+  postpone swap    \ Put decission variable to TOS.
   postpone if
-  2 * 1 + cs-pick   \ wasm-block and wasm-loop both add two frames
-                    \ on the control flow stack. Pick the dest-orig 
-                    \ frame pair according to nesting level. Then 
-                    \ take the dest part of the pair.
   postpone wasm-skip-levels
   postpone wasm-restore-stack
-  postpone again    \ Jump to the start of the block or loop.
+  1 cs-roll        \ Put the origin of IF underneath.
+  postpone again   \ Jump to the start of the block or loop.
   postpone else
-  postpone drop     \ We did not jump so drop lvl.
+  postpone drop    \ We did not jump so drop lvl.
   postpone endif
 ; immediate
 

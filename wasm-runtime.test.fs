@@ -241,9 +241,22 @@ test7-3
     2 +
   wasm-end
   4 +
-  5 test-equal
+  7 test-equal
 ;
 test8
+
+: test8-1
+  s" Test 8-1 .. " type
+  0
+  0 wasm-block
+    1 +
+    -1 0 [ 0 ] wasm-br-if
+    2 +
+  wasm-end
+  4 +
+  5 test-equal
+;
+test8-1
 
 \ Single loop with single br.
 \ : test6
