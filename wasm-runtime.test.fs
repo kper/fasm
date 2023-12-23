@@ -258,50 +258,87 @@ test8
 ;
 test8-1
 
-\ Single loop with single br.
-\ : test6
-\   s" Test 6 .. " type
-\   0
-\   0 wasm-loop
-\     1 +
-\     0 [ 0 ] wasm-br
-\     2 +
-\   wasm-end
-\   4 +
-\   5 test-equal
-\ ;
-\ test6
+\ Multiple blocks with single br-if.
+: test9
+  s" Test 9 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      0 0 [ 0 ] wasm-br-if
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  31 test-equal
+;
+test9
 
-\ : main
-\   s" Start Program " type cr
-\   0 wasm-block
-\     s" Start Block 0 " type cr
-\     0 wasm-block
-\       s" Start Block 1 " type cr
-\       [ 0 ] wasm-br
-\       s" End Block 1 " type cr
-\     wasm-end
-\     s" End Block 0 " type cr
-\   wasm-end
-\   s" End Program " type cr  
-\ ;
+: test9-1
+  s" Test 9-1 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      1 0 [ 0 ] wasm-br-if
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  27 test-equal
+;
+test9-1
 
-\ : main
-\   0 wasm-loop
-\     40
-\     s" outer loop " type cr
-\     0 wasm-loop
-\       s" inner loop " type cr
-\       41
-\       42
-\       0 [ 0 ] wasm-br
-\       s" inner loop - !!! " type cr
-\     wasm-end
-\     s" outer-loop - !!! " type cr
-\   wasm-end
-\   s" but this we should see " type cr  
-\ ;
+: test9-2
+  s" Test 9-2 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      0 1 [ 1 ] wasm-br-if
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  31 test-equal
+;
+test9-2
 
-\ main
+: test9-3
+  s" Test 9-3 .. " type
+  0
+  0 wasm-block
+    1 +
+    0 wasm-block
+      2 +
+      -1 1 [ 1 ] wasm-br-if
+      4 +
+    wasm-end
+    8 +
+  wasm-end
+  16 +
+  19 test-equal
+;
+test9-3
+
+\ Single loop with single br-if.
+: test10
+  s" Test 10 .. " type
+  0
+  0 wasm-block
+    0 wasm-loop
+      1 +
+      dup 10 < 0 [ 0 ] wasm-br-if
+    wasm-end
+  wasm-end
+  10 test-equal
+;
+test10
 
 bye
