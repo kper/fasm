@@ -7,7 +7,7 @@ $03 constant loop.begin
 $0B constant block.end
 $0C constant br
 $20 constant local.get
-$21 constant local.get
+$21 constant local.set
 $22 constant local.tee
 $41 constant i32.const
 \ 0x42 constant i64.const
