@@ -9,6 +9,8 @@ $0C constant br
 $20 constant local.get
 $21 constant local.set
 $22 constant local.tee
+$23 constant global.get
+$24 constant global.set
 $41 constant i32.const
 \ 0x42 constant i64.const
 $45 constant i32.eqz
@@ -39,6 +41,11 @@ $75 constant i32.shrs
 $76 constant i32.shru
 $77 constant i32.rotl
 $78 constant i32.rotr
+
+\ Memory
+
+$28 constant i32.load
+$36 constant i32.store
 
 \ Block return types.
 $40 constant VOID
@@ -87,6 +94,22 @@ $40 constant VOID
   char+                 \ Skip op-code.
   u32@
   s" local-stack " str->out 
+  num->out 
+  s" cells + !" str->out
+;
+
+: wasm-compile-global.get
+  char+                 \ Skip op-code.
+  u32@
+  s" global-stack " str->out 
+  num->out 
+  s" cells + @" str->out
+;
+
+: wasm-compile-global.set
+  char+                 \ Skip op-code.
+  u32@
+  s" global-stack " str->out 
   num->out 
   s" cells + !" str->out
 ;
@@ -234,6 +257,24 @@ $40 constant VOID
   s" bye" ln->out
 ;
 
+: wasm-compile-i32.load ( addr1 -- addr2 )
+  char+
+  u32@ { align }
+  u32@ { offset }
+  offset num->out 
+  s" add" ln->out
+  s" memory add @" ln->out
+;
+
+: wasm-compile-i32.store ( addr1 -- addr2 )
+  char+
+  u32@ { align }
+  u32@ { offset }
+  offset num->out 
+  s" add" ln->out
+  s" memory add !" ln->out
+;
+
 : wasm-compile-instructions ( addr1 code-end -- addr2 )
   { code-end }
   begin
@@ -246,6 +287,8 @@ $40 constant VOID
       local.get   of wasm-compile-local.get   endof
       local.set   of wasm-compile-local.set   endof
       local.tee   of wasm-compile-local.tee   endof
+      global.get  of wasm-compile-global.get  endof
+      global.set  of wasm-compile-global.set  endof
       i32.const   of wasm-compile-i32.const   endof
       i32.add     of wasm-compile-i32.add     endof
       i32.eqz     of wasm-compile-i32.eqz     endof
@@ -273,6 +316,8 @@ $40 constant VOID
       i32.shru    of wasm-compile-i32.shr_u   endof 
       i32.rotl    of wasm-compile-i32.rotl    endof
       i32.rotr    of wasm-compile-i32.rotr    endof
+      i32.store   of wasm-compile-i32.store   endof
+      i32.load    of wasm-compile-i32.load    endof
     endcase
   dup code-end >= until
 ;

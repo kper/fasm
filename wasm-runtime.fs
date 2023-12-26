@@ -7,8 +7,12 @@ create wasm-rts-sp    RTS-DEPTH cells allot
 create wasm-rts-arity RTS-DEPTH cells allot  
 \ WASM runtime stack pointer.
 create wasm-rtsp              1 cells allot  
-\ Local stack
+\ Local stack.
 create local-stack    MAX-LOCALS cells allot
+\ Global stack.
+create global-stack   MAX-LOCALS cells allot
+\ Create wasm memory.
+create memory         1024 cells allot
 
 0 wasm-rtsp !  \ Initialize pointer.
 
