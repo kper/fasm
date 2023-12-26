@@ -6,6 +6,7 @@ $02 constant block.begin
 $03 constant loop.begin
 $0B constant block.end
 $0C constant br
+$0D constant br.if
 $20 constant local.get
 $21 constant local.set
 $22 constant local.tee
@@ -84,12 +85,20 @@ $40 constant VOID
   s" wasm-br" ln->out
 ;
 
+: wasm-compile-br.if ( addr1 -- addr2 ) 
+  char+                 \ Skip op-code.
+  s" [ "      str->out  \ Wrap nesting level in compile-time block.
+  u32@        num->out  \ Write nesting level to output.
+  s" ] "      str->out  \ End of compile-time block.
+  s" wasm-br-if" ln->out
+;
+
 : wasm-compile-local.get
   char+                 \ Skip op-code.
   u32@
   s" local-stack " str->out 
   num->out 
-  s" cells + @" str->out
+  s" cells + @" ln->out
 ;
 
 : wasm-compile-local.set
@@ -97,7 +106,7 @@ $40 constant VOID
   u32@
   s" local-stack " str->out 
   num->out 
-  s" cells + !" str->out
+  s"  cells + !" ln->out
 ;
 
 : wasm-compile-global.get
@@ -105,7 +114,7 @@ $40 constant VOID
   u32@
   s" global-stack " str->out 
   num->out 
-  s" cells + @" str->out
+  s" cells + @" ln->out
 ;
 
 : wasm-compile-global.set
@@ -113,7 +122,7 @@ $40 constant VOID
   u32@
   s" global-stack " str->out 
   num->out 
-  s" cells + !" str->out
+  s"  cells + !" ln->out
 ;
 
 : wasm-compile-local.tee
@@ -121,7 +130,7 @@ $40 constant VOID
   u32@
   s" dup local-stack " str->out 
   num->out 
-  s" cells + !" str->out
+  s" cells + !" ln->out
 ;
 
 : wasm-compile-i32.const ( addr1 -- addr2 )
@@ -131,7 +140,7 @@ $40 constant VOID
 
 : wasm-compile-i32.add ( addr1 -- addr2 )
   char+            \ Skip op-code.
-  s" add" ln->out
+  s" +" ln->out
 ;
 
 : wasm-compile-i32.eqz ( addr1 -- addr2 )
@@ -191,12 +200,12 @@ $40 constant VOID
 
 : wasm-compile-i32.sub ( addr1 -- addr2 )
   char+
-  s" sub" ln->out
+  s" -" ln->out
 ;
 
 : wasm-compile-i32.mul ( addr1 -- addr2 )
   char+
-  s" mul" ln->out
+  s" *" ln->out
 ;
 
 : wasm-compile-i32.div_s ( addr1 -- addr2 )
@@ -286,6 +295,7 @@ $40 constant VOID
       loop.begin  of wasm-compile-loop.begin  endof
       block.end   of wasm-compile-block.end   endof
       br          of wasm-compile-br          endof
+      br.if       of wasm-compile-br.if       endof
       local.get   of wasm-compile-local.get   endof
       local.set   of wasm-compile-local.set   endof
       local.tee   of wasm-compile-local.tee   endof
@@ -325,7 +335,17 @@ $40 constant VOID
   dup code-end >= until
 ;
 
-\ TODO: support for locals.
+: wasm-locals ( addr1 -- addr2 )
+  u32@ drop char+ 
+;
+
+: vec-locals ( addr -- addr2 )
+  u32@ 0
+  ?do
+    wasm-locals
+  loop
+;
+
 : wasm-compile-code-section ( addr1 -- addr2 )
   dup c@ CODE-SECTION <> if 
     s" Expecting code section" exception
@@ -338,7 +358,6 @@ $40 constant VOID
   drop                    \ Currently only one is supported.
   dup u32@                \ Read code size.
   over + 1- { code-end }  \ Compute the end of the code block.
-  dup u32@                \ Read number of locals.
-  +                       \ Skip all locals. Each local has szie one byte.
+  dup vec-locals          \ Read number of locals.
   code-end wasm-compile-instructions
 ;
