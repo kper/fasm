@@ -42,6 +42,8 @@ $76 constant i32.shru
 $77 constant i32.rotl
 $78 constant i32.rotr
 
+$0F constant return
+
 \ Memory
 
 $28 constant i32.load
@@ -318,6 +320,7 @@ $40 constant VOID
       i32.rotr    of wasm-compile-i32.rotr    endof
       i32.store   of wasm-compile-i32.store   endof
       i32.load    of wasm-compile-i32.load    endof
+      return      of char+                    endof
     endcase
   dup code-end >= until
 ;
