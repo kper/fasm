@@ -24,9 +24,26 @@ require code.fs
   drop                    \ Drop status code.
 ;
 
+: wasm-compile-header ( -- )
+  \g Compiles imports, globals and the 
+  \g main colon-definition.
+  \
+  s" require wasm-runtime.fs" ln->out
+  s" : main" ln->out
+;
+
+: wasm-compile-footer ( -- )
+  \g Compiles the end of the main 
+  \g colon-definition and calls it.
+  \
+  s" ;" ln->out
+  s" main" ln->out
+;
+
 : wasm-compile ( addr -- )
   \g Compiles a WASM file to a FORTH source file.
   \
+  wasm-compile-header
   validate-magic-number
   validate-version
   TYPE-SECTION     skip-section
@@ -38,7 +55,7 @@ require code.fs
   EXPORT-SECTION   skip-section
   START-SECTION    skip-section
   ELEMENT-SECTION  skip-section
-  wasm-compile-code-section
-  \ CODE-SECTION     skip-section
+  ( CODE-SECTION ) wasm-compile-code-section
   DATA-SECTION     skip-section
+  wasm-compile-footer
 ;

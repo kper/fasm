@@ -16,9 +16,9 @@ create memory         1024 cells allot
 
 0 wasm-rtsp !  \ Initialize pointer.
 
-: .cs 
-  .s 
-; immediate
+\ : .cs 
+\   .s 
+\ ; immediate
 
 \ : wasm-debug
 \   s" Stack:     " type

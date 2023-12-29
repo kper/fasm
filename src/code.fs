@@ -1,5 +1,6 @@
 require leb128.fs
-require section.fs
+require utils.fs
+\ require section.fs
 
 \ Instruction op-codes.
 $02 constant block.begin
