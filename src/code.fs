@@ -79,17 +79,21 @@ $40 constant VOID
 
 : wasm-compile-br ( addr1 -- addr2 ) 
   char+                 \ Skip op-code.
-  s" [ "      str->out  \ Wrap nesting level in compile-time block.
-  u32@        num->out  \ Write nesting level to output.
-  s" ] "      str->out  \ End of compile-time block.
+  u32@ dup              \ Duplicate nesting level.
+  num->out              \ Write runtime nesting level.
+  s" [ " str->out       \ Wrap nesting level in compile-time block.
+  num->out              \ Write compile-time nesting level to output.
+  s" ] " str->out       \ End of compile-time block.
   s" wasm-br" ln->out
 ;
 
 : wasm-compile-br.if ( addr1 -- addr2 ) 
   char+                 \ Skip op-code.
-  s" [ "      str->out  \ Wrap nesting level in compile-time block.
-  u32@        num->out  \ Write nesting level to output.
-  s" ] "      str->out  \ End of compile-time block.
+  u32@ dup              \ Duplicate nesting level.
+  num->out              \ Write runtime nesting level.
+  s" [ " str->out       \ Wrap nesting level in compile-time block.
+  num->out              \ Write compile-time nesting level to output.
+  s" ] " str->out       \ End of compile-time block.
   s" wasm-br-if" ln->out
 ;
 
