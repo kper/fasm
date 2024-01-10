@@ -111,7 +111,7 @@ create memory         1024 cells allot
   postpone then   \ Block entry jump target.
 ; immediate
 
-: wasm-loop ( compilation: -- dest orig ; runtime: arity -- )
+: wasm-loop ( compilation: -- dest1 dest2 ; runtime: arity -- )
   \g Starts a new WASM loop.
   \g
   \g           +-- wasm-br
@@ -161,7 +161,7 @@ create memory         1024 cells allot
   postpone endif
 ; immediate
 
-: wasm-end ( compilation: dest orig -- )
+: wasm-end ( compilation: dest orig/dest -- )
   \g Ends a WASM block or loop.
   \
   dup dest = if     \ Phony control flow stack item is of type dest.
