@@ -63,7 +63,6 @@ $40 constant VOID
   s" wasm-block" ln->out
 ;
 
-\ TODO: incomplete?
 : wasm-compile-loop.begin ( addr1 -- addr2 ) 
   char+                     \ Skip op-code.
   dup c@                    \ Load block argument return type.
@@ -294,7 +293,7 @@ $40 constant VOID
 : wasm-compile-instructions ( addr1 code-end -- addr2 )
   { code-end }
   begin
-    dup c@ ~~     \ Reading instruction
+    dup c@  \ Reading instruction
     case
       block.begin of wasm-compile-block.begin endof
       loop.begin  of wasm-compile-loop.begin  endof

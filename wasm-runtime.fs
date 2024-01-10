@@ -16,22 +16,6 @@ create memory         1024 cells allot
 
 0 wasm-rtsp !  \ Initialize pointer.
 
-\ : .cs 
-\   .s 
-\ ; immediate
-
-\ : wasm-debug
-\   s" Stack:     " type
-\   .s cr
-\   s" RTSP:      " type
-\   wasm-rtsp @ . cr
-\   s" RTS Arity: " type
-\   wasm-rts-arity @ . cr
-\   s" RTS SP:    " type
-\   wasm-rts-sp @ . cr
-\   cr
-\ ;
-
 : wasm-rtsp++ ( -- )
   \g Increment the WASM runtime stack pointer.
   wasm-rtsp @ cell+ wasm-rtsp !
@@ -171,6 +155,5 @@ create memory         1024 cells allot
     postpone then   \ Jump target for the WASM block.
   endif
   cs-drop           \ Remove destination control frame.
-  \ TODO: wasm-restore-stack?
   postpone wasm-rtsp--
 ; immediate
